@@ -1,21 +1,20 @@
-namespace GotifySmtpForwarder
+namespace GotifySmtpForwarder;
+
+public class Worker : BackgroundService
 {
-	public class Worker : BackgroundService
+	private readonly ILogger<Worker> _logger;
+	private readonly SmtpServer.SmtpServer _smtpServer;
+
+	public Worker(ILogger<Worker> logger, SmtpServer.SmtpServer smtpServer)
 	{
-		private readonly ILogger<Worker> _logger;
+		_logger = logger;
+		_smtpServer = smtpServer;
+	}
 
-		public Worker(ILogger<Worker> logger)
-		{
-			_logger = logger;
-		}
+	protected override Task ExecuteAsync(CancellationToken stoppingToken)
+	{
+		_logger.LogInformation("Starting SMTP server");
 
-		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-		{
-			while (!stoppingToken.IsCancellationRequested)
-			{
-				_logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-				await Task.Delay(1000, stoppingToken);
-			}
-		}
+		return _smtpServer.StartAsync(stoppingToken);
 	}
 }

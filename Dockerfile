@@ -6,6 +6,7 @@ WORKDIR /app
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
 COPY ["GotifySmtpForwarder/GotifySmtpForwarder.csproj", "GotifySmtpForwarder/"]
+COPY ["nuget.config", "GotifySmtpForwarder/"]
 RUN dotnet restore "GotifySmtpForwarder/GotifySmtpForwarder.csproj"
 COPY . .
 WORKDIR "/src/GotifySmtpForwarder"
