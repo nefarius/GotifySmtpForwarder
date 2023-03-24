@@ -2,6 +2,8 @@
 
 using GotifySmtpForwarder.Schema;
 
+using Html2Markdown;
+
 using SmtpServer;
 using SmtpServer.Mail;
 using SmtpServer.Protocol;
@@ -34,7 +36,10 @@ internal class GotifyMessageStore : MessageStore
 
         string content = await new StreamReader(stream).ReadToEndAsync(cancellationToken);
 
-        await _gotifyApi.CreateMessage(new GotifyMessage { Message = content, Title = transaction.From.AsAddress() });
+        var converter = new Converter();
+        var markdown = converter.Convert(content);
+
+        await _gotifyApi.CreateMessage(new GotifyMessage { Message = markdown, Title = transaction.From.AsAddress() });
 
         return SmtpResponse.Ok;
     }
