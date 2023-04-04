@@ -1,6 +1,12 @@
 ﻿using System.Buffers;
 
+using Ganss.Xss;
+
 using GotifySmtpForwarder.Schema;
+
+using MimeKit;
+
+using ReverseMarkdown;
 
 using SmtpServer;
 using SmtpServer.Mail;
@@ -32,9 +38,46 @@ internal class GotifyMessageStore : MessageStore
 
         stream.Position = 0;
 
-        string content = await new StreamReader(stream).ReadToEndAsync(cancellationToken);
+        //string content = await new StreamReader(stream).ReadToEndAsync(cancellationToken);
 
-        await _gotifyApi.CreateMessage(new GotifyMessage { Message = content, Title = transaction.From.AsAddress() });
+        MimeMessage? message = await MimeMessage.LoadAsync(stream, cancellationToken);
+
+        if (message is null)
+        {
+            await _gotifyApi.CreateMessage(new GotifyMessage
+            {
+                Message = "Failed to parse message body!", Title = transaction.From.AsAddress()
+            });
+            return SmtpResponse.SyntaxError;
+        }
+
+        Config config = new()
+        {
+            UnknownTags = Config.UnknownTagsOption.Drop,
+            GithubFlavored = false,
+            RemoveComments = true,
+            SmartHrefHandling = true
+        };
+
+        Converter converter = new(config);
+
+        string? html = message.TextBody;
+
+        HtmlSanitizer sanitizer = new HtmlSanitizer();
+
+        string sanitized = sanitizer.Sanitize(html);
+
+        string? markdown = converter.Convert(sanitized);
+
+        await _gotifyApi.CreateMessage(new GotifyMessage
+        {
+            Title = transaction.From.AsAddress(),
+            Message = markdown,
+            Extras = new GotifyMessageExtras
+            {
+                ClientDisplay = new ExtraClientDisplay { ContentType = ExtraClientDisplay.ContentTypeMarkdown }
+            }
+        });
 
         return SmtpResponse.Ok;
     }
