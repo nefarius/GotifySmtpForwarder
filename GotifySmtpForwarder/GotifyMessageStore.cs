@@ -70,6 +70,13 @@ internal class GotifyMessageStore : MessageStore
 
             string? html = message.TextBody;
 
+            if (string.IsNullOrEmpty(html))
+            {
+                _logger.LogError("Message text body is empty.");
+
+                return SmtpResponse.SyntaxError;
+            }
+            
             HtmlSanitizer sanitizer = new();
 
             string sanitized = sanitizer.Sanitize(html);
