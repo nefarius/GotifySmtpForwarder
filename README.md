@@ -1,3 +1,5 @@
+<img src="assets/NSS-128x128.png" align="right" />
+
 # GotifySmtpForwarder
 
 Forwards e-mails to a Gotify application.
