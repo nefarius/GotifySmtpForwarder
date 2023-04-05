@@ -6,6 +6,8 @@ using GotifySmtpForwarder.Schema;
 
 using MimeKit;
 
+using Refit;
+
 using ReverseMarkdown;
 
 using SmtpServer;
@@ -52,6 +54,7 @@ internal class GotifyMessageStore : MessageStore
                 {
                     Message = "Failed to parse message body!", Title = transaction.From.AsAddress()
                 });
+
                 return SmtpResponse.SyntaxError;
             }
 
@@ -67,11 +70,18 @@ internal class GotifyMessageStore : MessageStore
 
             string? html = message.TextBody;
 
-            HtmlSanitizer sanitizer = new HtmlSanitizer();
+            HtmlSanitizer sanitizer = new();
 
             string sanitized = sanitizer.Sanitize(html);
 
             string? markdown = converter.Convert(sanitized);
+
+            if (string.IsNullOrEmpty(markdown))
+            {
+                _logger.LogError("HTML to Markdown conversion returned empty result.");
+
+                return SmtpResponse.SyntaxError;
+            }
 
             await _gotifyApi.CreateMessage(new GotifyMessage
             {
@@ -86,17 +96,17 @@ internal class GotifyMessageStore : MessageStore
 
             return SmtpResponse.Ok;
         }
-        catch (Refit.ApiException apiException)
+        catch (ApiException apiException)
         {
-            _logger.LogError(apiException, "Failed to submit Gotify message. Content: {Content}", 
+            _logger.LogError(apiException, "Failed to submit Gotify message. Content: {Content}",
                 apiException.Content);
-            
+
             return SmtpResponse.MailboxUnavailable;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to process mail message.");
-            
+
             return SmtpResponse.MailboxUnavailable;
         }
     }
