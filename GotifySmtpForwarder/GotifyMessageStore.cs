@@ -89,6 +89,8 @@ internal class GotifyMessageStore : MessageStore
         catch (Refit.ApiException apiException)
         {
             _logger.LogError(apiException, "Failed to submit Gotify message.");
+            
+            return SmtpResponse.MailboxUnavailable;
         }
         catch (Exception ex)
         {
