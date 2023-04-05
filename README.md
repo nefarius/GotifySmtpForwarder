@@ -14,6 +14,12 @@ install and keep an eye on. This little service can run alongside e.g. a WordPre
 it. The messages will then be forwarded to a Gotify server you can host yourself, so no need to have a mail gateway or
 relay and deal with the complications of them.
 
+## TODOs
+
+- Improve cleaning up the HTML before and/or after Markdown conversion to get rid of artefacts like shown here:  
+![hzt9znGPMM.png](assets/hzt9znGPMM.png)  
+  Looks like tables used to style the body get mangled especially badly right now. More testing required.
+
 ## 3rd party credits
 
 - [SmtpServer](https://github.com/cosullivan/SmtpServer)
