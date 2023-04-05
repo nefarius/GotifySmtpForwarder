@@ -36,6 +36,7 @@ internal class GotifyMessageStore : MessageStore
         {
             await using MemoryStream stream = new();
 
+            // get message headers and body
             SequencePosition position = buffer.GetPosition(0);
             while (buffer.TryGet(ref position, out ReadOnlyMemory<byte> memory))
             {
@@ -43,35 +44,25 @@ internal class GotifyMessageStore : MessageStore
             }
 
             stream.Position = 0;
-            
+
+            // parses the MIME message
             MimeMessage? message = await MimeMessage.LoadAsync(stream, cancellationToken);
 
             if (message is null)
             {
-                await _gotifyApi.CreateMessage(new GotifyMessage
-                {
-                    Message = "Failed to parse message body!", Title = transaction.From.AsAddress()
-                });
-
+                _logger.LogError("Failed to parse message body.");
+                
                 return SmtpResponse.SyntaxError;
             }
 
+            // fallback message if parsing fails
             string content = "<failed to parse message body>";
 
             switch (message.Body)
             {
+                // body is HTML content
                 case TextPart { IsHtml: true }:
                     {
-                        Config config = new()
-                        {
-                            UnknownTags = Config.UnknownTagsOption.Drop,
-                            GithubFlavored = true,
-                            RemoveComments = true,
-                            SmartHrefHandling = true
-                        };
-
-                        Converter converter = new(config);
-
                         string? html = message.HtmlBody;
 
                         if (string.IsNullOrEmpty(html))
@@ -83,10 +74,23 @@ internal class GotifyMessageStore : MessageStore
 
                         HtmlSanitizer sanitizer = new();
 
+                        // doesn't hurt, a lot of awful HTML out there :D
                         string sanitized = sanitizer.Sanitize(html);
+
+                        // converter options
+                        Config config = new()
+                        {
+                            UnknownTags = Config.UnknownTagsOption.Drop,
+                            GithubFlavored = true, // Gotify supports this, yay!
+                            RemoveComments = true,
+                            SmartHrefHandling = true
+                        };
+
+                        Converter converter = new(config);
 
                         string? markdown = converter.Convert(sanitized);
 
+                        // an empty result isn't really useful, treat as error
                         if (string.IsNullOrEmpty(markdown))
                         {
                             _logger.LogError("HTML to Markdown conversion returned empty result.");
@@ -97,6 +101,7 @@ internal class GotifyMessageStore : MessageStore
                         content = markdown;
                         break;
                     }
+                // body is plain text
                 case TextPart { IsPlain: true }:
                     content = message.TextBody;
                     break;
