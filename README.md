@@ -24,6 +24,8 @@ relay and deal with the complications of them.
 
 ## 3rd party credits
 
+Many thanks to these awesome projects that do the heavy lifting under the hood ♥
+
 - [SmtpServer](https://github.com/cosullivan/SmtpServer)
 - [Refit](https://github.com/reactiveui/refit)
 - [Polly](https://www.thepollyproject.org/)
