@@ -18,67 +18,79 @@ namespace GotifySmtpForwarder;
 internal class GotifyMessageStore : MessageStore
 {
     private readonly IGotifyApi _gotifyApi;
+    private readonly ILogger<GotifyMessageStore> _logger;
 
-    public GotifyMessageStore(IGotifyApi gotifyApi)
+    public GotifyMessageStore(IGotifyApi gotifyApi, ILogger<GotifyMessageStore> logger)
     {
         _gotifyApi = gotifyApi;
+        _logger = logger;
     }
 
     public override async Task<SmtpResponse> SaveAsync(ISessionContext context, IMessageTransaction transaction,
         ReadOnlySequence<byte> buffer,
         CancellationToken cancellationToken)
     {
-        await using MemoryStream stream = new();
-
-        SequencePosition position = buffer.GetPosition(0);
-        while (buffer.TryGet(ref position, out ReadOnlyMemory<byte> memory))
+        try
         {
-            await stream.WriteAsync(memory, cancellationToken);
-        }
+            await using MemoryStream stream = new();
 
-        stream.Position = 0;
+            SequencePosition position = buffer.GetPosition(0);
+            while (buffer.TryGet(ref position, out ReadOnlyMemory<byte> memory))
+            {
+                await stream.WriteAsync(memory, cancellationToken);
+            }
 
-        //string content = await new StreamReader(stream).ReadToEndAsync(cancellationToken);
+            stream.Position = 0;
 
-        MimeMessage? message = await MimeMessage.LoadAsync(stream, cancellationToken);
+            //string content = await new StreamReader(stream).ReadToEndAsync(cancellationToken);
 
-        if (message is null)
-        {
+            MimeMessage? message = await MimeMessage.LoadAsync(stream, cancellationToken);
+
+            if (message is null)
+            {
+                await _gotifyApi.CreateMessage(new GotifyMessage
+                {
+                    Message = "Failed to parse message body!", Title = transaction.From.AsAddress()
+                });
+                return SmtpResponse.SyntaxError;
+            }
+
+            Config config = new()
+            {
+                UnknownTags = Config.UnknownTagsOption.Drop,
+                GithubFlavored = false,
+                RemoveComments = true,
+                SmartHrefHandling = true
+            };
+
+            Converter converter = new(config);
+
+            string? html = message.TextBody;
+
+            HtmlSanitizer sanitizer = new HtmlSanitizer();
+
+            string sanitized = sanitizer.Sanitize(html);
+
+            string? markdown = converter.Convert(sanitized);
+
             await _gotifyApi.CreateMessage(new GotifyMessage
             {
-                Message = "Failed to parse message body!", Title = transaction.From.AsAddress()
+                Title = transaction.From.AsAddress(),
+                Message = markdown,
+                Extras = new GotifyMessageExtras
+                {
+                    ClientDisplay =
+                        new ExtraClientDisplay { ContentType = ExtraClientDisplay.ContentTypeMarkdown }
+                }
             });
-            return SmtpResponse.SyntaxError;
+
+            return SmtpResponse.Ok;
         }
-
-        Config config = new()
+        catch (Exception ex)
         {
-            UnknownTags = Config.UnknownTagsOption.Drop,
-            GithubFlavored = false,
-            RemoveComments = true,
-            SmartHrefHandling = true
-        };
-
-        Converter converter = new(config);
-
-        string? html = message.TextBody;
-
-        HtmlSanitizer sanitizer = new HtmlSanitizer();
-
-        string sanitized = sanitizer.Sanitize(html);
-
-        string? markdown = converter.Convert(sanitized);
-
-        await _gotifyApi.CreateMessage(new GotifyMessage
-        {
-            Title = transaction.From.AsAddress(),
-            Message = markdown,
-            Extras = new GotifyMessageExtras
-            {
-                ClientDisplay = new ExtraClientDisplay { ContentType = ExtraClientDisplay.ContentTypeMarkdown }
-            }
-        });
-
-        return SmtpResponse.Ok;
+            _logger.LogError(ex, "Failed to process message.");
+            
+            return SmtpResponse.MailboxUnavailable;
+        }
     }
 }
