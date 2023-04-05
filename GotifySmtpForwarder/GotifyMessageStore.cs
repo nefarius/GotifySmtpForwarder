@@ -43,9 +43,7 @@ internal class GotifyMessageStore : MessageStore
             }
 
             stream.Position = 0;
-
-            //string content = await new StreamReader(stream).ReadToEndAsync(cancellationToken);
-
+            
             MimeMessage? message = await MimeMessage.LoadAsync(stream, cancellationToken);
 
             if (message is null)
@@ -58,42 +56,56 @@ internal class GotifyMessageStore : MessageStore
                 return SmtpResponse.SyntaxError;
             }
 
-            Config config = new()
+            string content = "<failed to parse message body>";
+
+            switch (message.Body)
             {
-                UnknownTags = Config.UnknownTagsOption.Drop,
-                GithubFlavored = false,
-                RemoveComments = true,
-                SmartHrefHandling = true
-            };
+                case TextPart { IsHtml: true }:
+                    {
+                        Config config = new()
+                        {
+                            UnknownTags = Config.UnknownTagsOption.Drop,
+                            GithubFlavored = true,
+                            RemoveComments = true,
+                            SmartHrefHandling = true
+                        };
 
-            Converter converter = new(config);
+                        Converter converter = new(config);
 
-            string? html = message.TextBody;
+                        string? html = message.HtmlBody;
 
-            if (string.IsNullOrEmpty(html))
-            {
-                _logger.LogError("Message text body is empty.");
+                        if (string.IsNullOrEmpty(html))
+                        {
+                            _logger.LogError("Message text body is empty.");
 
-                return SmtpResponse.SyntaxError;
-            }
-            
-            HtmlSanitizer sanitizer = new();
+                            return SmtpResponse.SyntaxError;
+                        }
 
-            string sanitized = sanitizer.Sanitize(html);
+                        HtmlSanitizer sanitizer = new();
 
-            string? markdown = converter.Convert(sanitized);
+                        string sanitized = sanitizer.Sanitize(html);
 
-            if (string.IsNullOrEmpty(markdown))
-            {
-                _logger.LogError("HTML to Markdown conversion returned empty result.");
+                        string? markdown = converter.Convert(sanitized);
 
-                return SmtpResponse.SyntaxError;
+                        if (string.IsNullOrEmpty(markdown))
+                        {
+                            _logger.LogError("HTML to Markdown conversion returned empty result.");
+
+                            return SmtpResponse.SyntaxError;
+                        }
+
+                        content = markdown;
+                        break;
+                    }
+                case TextPart { IsPlain: true }:
+                    content = message.TextBody;
+                    break;
             }
 
             await _gotifyApi.CreateMessage(new GotifyMessage
             {
                 Title = transaction.From.AsAddress(),
-                Message = markdown,
+                Message = content,
                 Extras = new GotifyMessageExtras
                 {
                     ClientDisplay =

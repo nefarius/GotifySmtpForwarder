@@ -21,7 +21,6 @@ relay and deal with the complications of them.
 - Improve cleaning up the HTML before and/or after Markdown conversion to get rid of artefacts like shown here:  
 ![hzt9znGPMM.png](assets/hzt9znGPMM.png)  
   Looks like tables used to style the body get mangled especially badly right now. More testing required.
-- If the source message is already Markdown formatted, it should bypass the HTML sanitization, need to see if MimeKit can reliably label HTML content as such.
 
 ## 3rd party credits
 
