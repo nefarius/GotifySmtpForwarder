@@ -75,7 +75,7 @@ internal class GotifyMessageStore : MessageStore
                         HtmlSanitizer sanitizer = new();
 
                         // doesn't hurt, a lot of awful HTML out there :D
-                        string sanitized = sanitizer.Sanitize(html);
+                        string sanitized = sanitizer.Sanitize(html).Trim(' ', '\t', '\n');
 
                         // converter options
                         Config config = new()
