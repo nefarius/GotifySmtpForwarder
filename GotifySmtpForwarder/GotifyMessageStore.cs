@@ -50,7 +50,7 @@ internal class GotifyMessageStore : MessageStore
 
             if (message is null)
             {
-                _logger.LogError("Failed to parse message body.");
+                _logger.LogError("Failed to parse message body");
                 
                 return SmtpResponse.SyntaxError;
             }
@@ -67,7 +67,7 @@ internal class GotifyMessageStore : MessageStore
 
                         if (string.IsNullOrEmpty(html))
                         {
-                            _logger.LogError("Message text body is empty.");
+                            _logger.LogError("Message text body is empty");
 
                             return SmtpResponse.SyntaxError;
                         }
@@ -93,7 +93,7 @@ internal class GotifyMessageStore : MessageStore
                         // an empty result isn't really useful, treat as error
                         if (string.IsNullOrEmpty(markdown))
                         {
-                            _logger.LogError("HTML to Markdown conversion returned empty result.");
+                            _logger.LogError("HTML to Markdown conversion returned empty result");
 
                             return SmtpResponse.SyntaxError;
                         }
@@ -129,7 +129,7 @@ internal class GotifyMessageStore : MessageStore
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to process mail message.");
+            _logger.LogError(ex, "Failed to process mail message");
 
             return SmtpResponse.MailboxUnavailable;
         }
