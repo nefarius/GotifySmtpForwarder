@@ -17,7 +17,7 @@
         <PackageReference Include="MimeKit" Version="4.0.0"/>
         <PackageReference Include="Polly.Contrib.WaitAndRetry" Version="1.1.1"/>
         <PackageReference Include="Refit.HttpClientFactory" Version="6.5.1"/>
-        <PackageReference Include="ReverseMarkdown" Version="3.24.0"/>
+        <PackageReference Include="ReverseMarkdown" Version="3.25.0"/>
         <PackageReference Include="SmtpServer" Version="9.0.3"/>
     </ItemGroup>
 </Project>
