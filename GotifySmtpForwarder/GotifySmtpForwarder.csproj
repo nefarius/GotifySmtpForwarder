@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="HtmlSanitizer" Version="8.0.645"/>
+        <PackageReference Include="HtmlSanitizer" Version="8.0.692"/>
         <PackageReference Include="MailKit" Version="4.1.0"/>
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1"/>
         <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="7.0.9"/>
