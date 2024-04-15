@@ -10,11 +10,11 @@
 
     <ItemGroup>
         <PackageReference Include="HtmlSanitizer" Version="8.0.843"/>
-        <PackageReference Include="MailKit" Version="4.4.0"/>
+        <PackageReference Include="MailKit" Version="4.5.0"/>
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0"/>
         <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="8.0.3"/>
         <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.20.1"/>
-        <PackageReference Include="MimeKit" Version="4.4.0"/>
+        <PackageReference Include="MimeKit" Version="4.5.0"/>
         <PackageReference Include="Polly.Contrib.WaitAndRetry" Version="1.1.1"/>
         <PackageReference Include="Refit.HttpClientFactory" Version="7.0.0"/>
         <PackageReference Include="ReverseMarkdown" Version="4.3.0"/>
