@@ -11,7 +11,7 @@
     <PackageReference Include="MailKit" Version="4.7.1.1" />
     <PackageReference Include="MimeKit" Version="4.7.1" />
     <PackageReference Include="Polly.Contrib.WaitAndRetry" Version="1.1.1" />
-    <PackageReference Include="Refit.HttpClientFactory" Version="7.1.2" />
+    <PackageReference Include="Refit.HttpClientFactory" Version="7.2.1" />
     <PackageReference Include="ReverseMarkdown" Version="4.6.0" />
     <PackageReference Include="SmtpServer" Version="10.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
