@@ -90,7 +90,7 @@ internal class GotifyMessageStore : MessageStore
 
                         string? markdown = converter.Convert(sanitized);
 
-                        // an empty result isn't really useful, treat as error
+                        // an empty result isn't really useful, treat as an error
                         if (string.IsNullOrEmpty(markdown))
                         {
                             _logger.LogError("HTML to Markdown conversion returned empty result");

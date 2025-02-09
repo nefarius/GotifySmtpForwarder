@@ -2,7 +2,7 @@
 
 internal class Gotify
 {
-    public string Key { get; set; } = null!;
+    public required string Key { get; set; }
 
-    public string ServerUrl { get; set; } = null!;
+    public required string ServerUrl { get; set; }
 }
