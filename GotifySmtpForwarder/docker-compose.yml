@@ -1,0 +1,41 @@
+﻿version: "3"
+
+services:
+  gotify-app-server:
+    image: gotify/server
+    container_name: gotify-app-server
+    environment:
+      - TZ="Europe/Vienna"
+      - GOTIFY_DEFAULTUSER_PASS=custom
+      - GOTIFY_SERVER_SSL_ENABLED=false
+      - GOTIFY_SERVER_SSL_REDIRECTTOHTTPS=false
+      - GOTIFY_DEFAULTUSER_NAME=nefarius
+      - GOTIFY_DEFAULTUSER_PASS=EerLVnHQr6
+      - GOTIFY_DATABASE_DIALECT=sqlite3
+      - GOTIFY_DATABASE_CONNECTION=data/gotify.db
+      - GOTIFY_UPLOADEDIMAGESDIR=data/images
+      - GOTIFY_PLUGINSDIR=data/plugins
+      - GOTIFY_REGISTRATION=false
+    volumes:
+      - ./data:/app/data
+    ports:
+      - "8088:80"
+    restart: unless-stopped
+    networks:
+      - ipc
+
+  gotify-smtp-server:
+    image: containinger/gsf
+    container_name: gotify-smtp-server
+    environment:
+      - TZ="Europe/Vienna"
+      - Gotify__Key=
+      - Gotify__ServerUrl=
+    ports:
+      - "9025:9025"
+    restart: unless-stopped
+    networks:
+      - ipc
+
+networks:
+  ipc:
