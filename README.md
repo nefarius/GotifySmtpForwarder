@@ -7,7 +7,8 @@ Forwards e-mails to a Gotify application.
 ## About
 
 This project spawns an SMTP server and forwards received e-mail messages to a [Gotify](https://gotify.net/) application
-of your choice. If the message body contains HTML it gets automatically sanitized and converted to Markdown! 
+of your choice.
+If the message body contains HTML, it gets automatically sanitized and converted to Markdown! 
 
 ## Why?
 
