@@ -29,8 +29,8 @@ services:
     container_name: gotify-smtp-server
     environment:
       - TZ="Europe/Vienna"
-      - Gotify__Key=
-      - Gotify__ServerUrl=
+      - Gotify__Key=your api key
+      - Gotify__ServerUrl=http://gotify-app-server
     ports:
       - "9025:9025"
     restart: unless-stopped
