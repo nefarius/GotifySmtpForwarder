@@ -18,7 +18,7 @@ relay and deal with the complications of them.
 
 ## TODOs
 
-- Improve cleaning up the HTML before and/or after Markdown conversion to get rid of artefacts like shown here:  
+- Improve cleaning up the HTML before and/or after Markdown conversion to get rid of artifacts like shown here:  
 ![hzt9znGPMM.png](assets/hzt9znGPMM.png)  
   Looks like tables used to style the body get mangled especially badly right now. More testing required.
 
