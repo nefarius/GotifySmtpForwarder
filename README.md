@@ -1,6 +1,6 @@
 # <img src="assets/NSS-128x128.png" align="left" />GotifySmtpForwarder
 
-![Requirements](https://img.shields.io/badge/Requires-.NET%208-blue.svg)
+![Requirements](https://img.shields.io/badge/Requires-.NET%209-blue.svg)
 
 Forwards e-mails to a Gotify application.
 
