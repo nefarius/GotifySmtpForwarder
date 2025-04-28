@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 /GotifySmtpForwarder/appsettings.Development.json
 /.idea
+/GotifySmtpForwarder/docker-compose.yml
