@@ -9,7 +9,7 @@
   <ItemGroup>
     <PackageReference Include="HtmlSanitizer" Version="9.0.886" />
     <PackageReference Include="MailKit" Version="4.13.0" />
-    <PackageReference Include="MimeKit" Version="4.13.0" />
+    <PackageReference Include="MimeKit" Version="4.14.0" />
     <PackageReference Include="Polly.Contrib.WaitAndRetry" Version="1.1.1" />
     <PackageReference Include="Refit.HttpClientFactory" Version="8.0.0" />
     <PackageReference Include="ReverseMarkdown" Version="4.7.0" />
