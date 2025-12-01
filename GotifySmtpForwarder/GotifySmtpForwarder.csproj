@@ -7,7 +7,7 @@
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="HtmlSanitizer" Version="9.0.886" />
+    <PackageReference Include="HtmlSanitizer" Version="9.0.889" />
     <PackageReference Include="MailKit" Version="4.14.1" />
     <PackageReference Include="MimeKit" Version="4.14.0" />
     <PackageReference Include="Polly.Contrib.WaitAndRetry" Version="1.1.1" />
